@@ -126,17 +126,6 @@ Custom converters are sandboxed and filtered for:
 - **File API** for download/upload functionality
 - **URLSearchParams** for query string parsing
 
-## 📁 File Structure
-
-```
-json-converter/
-├── index.html          # Main application file
-├── README.md          # This documentation
-└── custom-converters/ # Example custom converters (optional)
-    ├── pipe-separated.js
-    ├── xml-basic.js
-    └── log-parser.js
-```
 
 ## 🎯 Use Cases
 
