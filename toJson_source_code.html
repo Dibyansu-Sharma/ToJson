@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Ruby Hash to JSON Converter | JavaScript Object to JSON | CSV to JSON | Free Online Tool</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="description" content="Free online converter to transform Ruby hashes, JavaScript objects, CSV, query strings, and INI files to JSON format. Support for complex nested structures, symbols, and custom converters." />
+<meta name="keywords" content="ruby hash to json, javascript object to json, csv to json converter, query string to json, ini to json, json converter, ruby to json, hash converter, symbol to string, nested json, json formatter, json prettifier, data converter, online json tool" />
+<meta name="author" content="JSON Converter Tool" />
+<meta name="robots" content="index, follow" />
+<meta property="og:title" content="Ruby Hash to JSON Converter | Free Online JSON Conversion Tool" />
+<meta property="og:description" content="Convert Ruby hashes, JavaScript objects, CSV files, and more to JSON format instantly. Handles complex nested structures and Ruby symbols." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://your-domain.com" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Ruby Hash to JSON Converter | Free Online Tool" />
+<meta name="twitter:description" content="Free online converter for Ruby hashes, JavaScript objects, CSV to JSON. Supports nested structures and custom converters." />
+<link rel="canonical" href="https://your-domain.com" />
+<style>
+  body { font-family: Inter, system-ui, Arial, sans-serif; margin: 18px; background:#fbfbfb; color:#111 }
+  .wrap { max-width:900px; margin:0 auto; }
+  h1 { margin:0 0 8px 0; font-size:20px }
+  label { display:block; margin:12px 0 6px 0; font-weight:600; }
+  textarea { width:100%; min-height:140px; font-family: monospace; padding:10px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box }
+  select, input[type="text"], input[type="file"] { padding:8px 10px; border-radius:8px; border:1px solid #ddd; width:100%; box-sizing:border-box }
+  .row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap }
+  button { padding:8px 12px; border-radius:8px; border: none; cursor:pointer }
+  .primary { background:#0070f3; color:white }
+  .muted { background:#f3f4f6; color:#111 }
+  .danger { background:#ef4444; color:white }
+  .small { font-size:13px; color:#555; margin-top:6px }
+  .builtins { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px }
+  textarea[readonly] { background:#fff; }
+  .panel { background:white; padding:12px; border-radius:10px; border:1px solid #eee; box-shadow:0 1px 0 rgba(0,0,0,0.02); }
+  .inline { display:inline-block; vertical-align:middle }
+  .horizontal { display:flex; gap:10px; align-items:center }
+  .danger-note { color:#b91c1c; font-size:13px }
+  pre { white-space:pre-wrap; word-break:break-word; font-family:monospace; }
+  .file-input-container { position: relative; display: inline-block; }
+  .file-input-label { background: #f3f4f6; color: #111; padding: 8px 12px; border-radius: 8px; cursor: pointer; display: inline-block; }
+  .file-input-label:hover { background: #e5e7eb; }
+  input[type="file"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Ruby Hash to JSON Converter | Free Online JSON Tool</h1>
+      <p style="color:#666; font-size:14px; margin:8px 0 16px 0;">Convert Ruby hashes, JavaScript objects, CSV files, query strings, and INI files to JSON format instantly. Supports complex nested structures, Ruby symbols, and custom converters.</p>
+    </header>
+
+    <div class="panel">
+      <h2 style="font-size:18px; margin:0 0 12px 0; color:#333;">JSON Converter Options</h2>
+      <label for="type">Input type (pick one to help preprocessing)</label>
+      <select id="type">
+        <option value="auto">Auto-detect</option>
+        <option value="ruby">Ruby hash (e.g. {:a => 1, :b => "x"})</option>
+        <option value="js">JavaScript object (e.g. { a: 1, b: "x" })</option>
+        <option value="json">JSON</option>
+        <option value="csv">CSV (first row = headers)</option>
+        <option value="qs">Query string (a=1&amp;b=2)</option>
+        <option value="ini">INI (simple)</option>
+      </select>
+
+      <label for="input">Input (paste your data)</label>
+      <textarea id="input" placeholder='Example: { :name => "Alice", :age => 25 }'></textarea>
+
+      <div class="row">
+        <button class="primary" id="btnToJson">➡️ To JSON</button>
+        <button class="muted" id="btnFromJson">⬅️ From JSON (prettify)</button>
+        <button class="muted" id="btnClear">Clear</button>
+        <button class="muted" id="btnCopy">📋 Copy Result</button>
+      </div>
+
+      <label for="output" style="margin-top:12px">Output</label>
+      <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+
+      <div class="small">
+        Built-ins: <span class="builtins">
+          <button class="muted" data-insert="{ :name => &quot;Alice&quot;, :age => 25 }">Ruby hash</button>
+          <button class="muted" data-insert="{ name: 'Bob', age: 30 }">JS object</button>
+          <button class="muted" data-insert='name,age\nAlice,25\nBob,30'>CSV</button>
+          <button class="muted" data-insert="a=1&b=2">Query string</button>
+          <button class="muted" data-insert="[section]\nkey=value">INI</button>
+          <button class="muted" data-insert="{ :user => { :name => &quot;Alice&quot;, :roles => [:admin, :editor] }, :active => true }">Complex Ruby</button>
+          <button class="muted" data-insert="Hello World">Reverse String</button>
+        </span>
+      </div>
+
+      <hr style="margin:12px 0" />
+
+      <h3 style="font-size:16px; margin:12px 0 8px 0; color:#333;">Custom JavaScript Converter</h3>
+      <label>Write your own converter function (advanced)</label>
+      <div class="small">Write a function that receives the raw input string and returns either an object/array/value (which will be JSON-stringified) or a string error. Example function signature:<br>
+        <pre>function convert(input) { /* return value */ }</pre>
+      </div>
+
+      <textarea id="customCode" placeholder="function convert(input){ /*...*/ }"></textarea>
+
+      <div class="row">
+        <button id="runCustom" class="primary">Run custom converter</button>
+        <button id="saveCustom" class="muted">Save to localStorage</button>
+        <button id="loadCustom" class="muted">Load from localStorage</button>
+        <button id="clearCustom" class="muted">Clear localStorage</button>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <button id="downloadCustom" class="muted">📥 Download Converter</button>
+        <div class="file-input-container">
+          <label for="uploadCustom" class="file-input-label">📤 Upload Converter</label>
+          <input type="file" id="uploadCustom" accept=".js,.txt" />
+        </div>
+      </div>
+
+      <div style="margin-top:8px" class="horizontal">
+        <div class="danger-note">Sandbox & security note:</div>
+        <div class="small" style="margin-left:8px">
+          The page will try to sandbox your converter inside a Web Worker and will block obvious dangerous tokens (network, DOM, storage, eval). That reduces risk but is NOT a perfect security guarantee. Do not save or run untrusted converters on sensitive data.
+        </div>
+      </div>
+    </div>
+
+    <div style="height:18px"></div>
+
+    <section class="panel small">
+      <h2 style="font-size:16px; margin:0 0 8px 0; color:#333;">Supported Data Formats</h2>
+      
+      <h3 style="font-size:14px; margin:12px 0 4px 0; color:#555;">Ruby Hash to JSON Conversion</h3>
+      <p style="margin:4px 0 8px 0;">Convert Ruby hash syntax including symbols, nested hashes, and symbol arrays:</p>
+      <ul style="margin:0 0 12px 20px;">
+        <li><code>{ :name => "Alice", :age => 25 }</code> → <code>{"name": "Alice", "age": 25}</code></li>
+        <li><code>{ :roles => [:admin, :editor] }</code> → <code>{"roles": ["admin", "editor"]}</code></li>
+        <li>Ruby <code>nil</code> values automatically converted to JSON <code>null</code></li>
+      </ul>
+
+      <h3 style="font-size:14px; margin:12px 0 4px 0; color:#555;">JavaScript Object to JSON</h3>
+      <ul style="margin:0 0 12px 20px;">
+        <li>Standard JS object notation: <code>{ name: "Bob", active: true }</code></li>
+        <li>Nested objects and arrays supported</li>
+        <li>Automatic type detection and conversion</li>
+      </ul>
+
+      <h3 style="font-size:14px; margin:12px 0 4px 0; color:#555;">CSV to JSON Converter</h3>
+      <ul style="margin:0 0 12px 20px;">
+        <li>First row used as object keys/headers</li>
+        <li>Each data row becomes a JSON object</li>
+        <li>Output: Array of objects format</li>
+      </ul>
+
+      <h3 style="font-size:14px; margin:12px 0 4px 0; color:#555;">Additional Formats</h3>
+      <ul style="margin:0 0 12px 20px;">
+        <li><strong>Query String to JSON:</strong> <code>a=1&amp;b=2</code> → <code>{"a": "1", "b": "2"}</code></li>
+        <li><strong>INI File to JSON:</strong> Section-based configuration files</li>
+        <li><strong>JSON Prettifier:</strong> Format and validate existing JSON</li>
+      </ul>
+
+      <strong>Technical Features</strong>
+      <ul style="margin:8px 0 0 20px;">
+        <li><strong>Ruby Symbol Handling:</strong> Automatic conversion of Ruby symbols to JSON strings</li>
+        <li><strong>Nested Structure Support:</strong> Deep conversion of complex nested data</li>
+        <li><strong>Custom Converters:</strong> Write JavaScript functions for specialized data processing</li>
+        <li><strong>Sandboxed Execution:</strong> Safe processing of custom converter code</li>
+        <li><strong>Download/Upload:</strong> Save and share custom converters as files</li>
+        <li><strong>Auto-detection:</strong> Intelligent format recognition</li>
+      </ul>
+
+      <h3 style="font-size:14px; margin:12px 0 4px 0; color:#555;">Common Use Cases</h3>
+      <ul style="margin:0 0 12px 20px;">
+        <li>Converting Ruby application data for APIs</li>
+        <li>Transforming CSV data for web applications</li>
+        <li>Processing configuration files (INI to JSON)</li>
+        <li>Validating and formatting JSON data</li>
+        <li>Converting URL parameters to structured data</li>
+      </ul>
+
+      <strong>Limitations & Security</strong>
+      <ul>
+        <li><strong>Ruby Preprocessing:</strong> Symbol conversion is heuristic-based and may require manual adjustment for very complex structures</li>
+        <li><strong>Data Type Limitations:</strong> Functions, classes, and executable code cannot be represented in JSON format</li>
+        <li><strong>Custom Converter Security:</strong> Sandboxed execution blocks dangerous operations but isn't 100% secure - only run trusted code</li>
+        <li><strong>File Storage:</strong> Custom converters saved in browser localStorage and can be exported as .js files</li>
+        <li><strong>Browser Compatibility:</strong> Requires modern browser with Web Worker support for custom converters</li>
+      </ul>
+    </section>
+
+    <footer style="text-align:center; margin-top:20px; padding:12px; color:#666; font-size:12px;">
+      <p>Free online JSON converter supporting Ruby hashes, JavaScript objects, CSV, and more. No registration required.</p>
+    </footer>
+  </div>
+
+<script>
+/* -------------------------
+   Utility functions
+------------------------- */
+function setOutput(text){ document.getElementById('output').value = text; }
+function tryParseJSON(s){ try { return JSON.parse(s); } catch(e){ return null; } }
+
+/* -------------------------
+   Enhanced Ruby preprocessor
+------------------------- */
+function preprocessRuby(input){
+  let processed = input;
+  
+  // Handle symbols in arrays first (before general symbol replacement)
+  // Convert [:symbol1, :symbol2] to ["symbol1", "symbol2"]
+  processed = processed.replace(/\[([^\]]*)\]/g, function(match, content) {
+    return '[' + content.replace(/:(\w+)/g, '"$1"') + ']';
+  });
+  
+  // Convert symbol keys :key => to "key":
+  processed = processed.replace(/:(\w+)\s*=>/g, '"$1":');
+  
+  // Convert remaining standalone symbols to strings
+  processed = processed.replace(/:(\w+)([,\}\s\]])/g, '"$1"$2');
+  
+  // Convert nil to null
+  processed = processed.replace(/\bnil\b/g, 'null');
+  
+  return processed;
+}
+
+/* -------------------------
+   Other preprocessors
+------------------------- */
+function preprocessJSObject(input){ return input; }
+function parseCSV(input){
+  const rows = input.trim().split(/\r?\n/).map(r=>r.split(','));
+  if(rows.length<1) return [];
+  const headers = rows[0].map(h=>h.trim());
+  return rows.slice(1).map(r=>{
+    const obj={};
+    for(let i=0;i<headers.length;i++){ obj[headers[i]] = r[i] !== undefined ? r[i].trim() : null; }
+    return obj;
+  });
+}
+function parseQueryString(input){
+  const params=new URLSearchParams(input.trim()), out={};
+  for(const [k,v] of params.entries()){
+    if(out.hasOwnProperty(k)){ if(!Array.isArray(out[k])) out[k]=[out[k]]; out[k].push(v); }
+    else out[k]=v;
+  }
+  return out;
+}
+function parseINI(input){
+  const out={}, lines=input.split(/\r?\n/); let section=null;
+  for(const raw of lines){
+    const line=raw.trim(); if(!line || line.startsWith(';')||line.startsWith('#')) continue;
+    const m=line.match(/^\[(.+)\]$/); if(m){ section=m[1]; out[section]={}; continue; }
+    const kv=line.split('='); if(kv.length<2) continue;
+    const k=kv.shift().trim(); const v=kv.join('=').trim();
+    if(section) out[section][k]=v; else out[k]=v;
+  }
+  return out;
+}
+
+/* -------------------------
+   Sandbox for custom converters
+------------------------- */
+const forbiddenTokens=['fetch','XMLHttpRequest','WebSocket','importScripts','document','window','localStorage','sessionStorage','indexedDB','eval','Function','postMessage.toString','navigator','Worker','crypto.subtle'];
+
+function codeIsSafe(code){
+  const lower=code.toLowerCase();
+  for(const t of forbiddenTokens) if(lower.includes(t.toLowerCase())) return {ok:false, reason:t};
+  if(code.length>3500) return {ok:false, reason:'code-too-long'};
+  return {ok:true};
+}
+
+function runUserConverter(code,input,timeoutMs=1500){
+  return new Promise(resolve=>{
+    const ok=codeIsSafe(code); if(!ok.ok) return resolve({ok:false,error:'Blocked unsafe token: '+ok.reason});
+    const workerSrc=`
+      self.onmessage=function(e){
+        const input=e.data;
+        try{
+          const userConvert=${code};
+          if(typeof userConvert!=='function'){ self.postMessage({ok:false,error:'Provided code is not a function'}); return; }
+          const result=userConvert(input);
+          if(result && typeof result.then==='function'){ result.then(r=>self.postMessage({ok:true,result:r})).catch(err=>self.postMessage({ok:false,error:String(err)})); }
+          else self.postMessage({ok:true,result:result});
+        }catch(err){ self.postMessage({ok:false,error:String(err)}); }
+      };
+    `;
+    const blob=new Blob([workerSrc],{type:'application/javascript'});
+    const url=URL.createObjectURL(blob); const worker=new Worker(url);
+    const timer=setTimeout(()=>{ worker.terminate(); URL.revokeObjectURL(url); resolve({ok:false,error:'Execution timed out'}); },timeoutMs);
+    worker.onmessage=function(ev){ clearTimeout(timer); worker.terminate(); URL.revokeObjectURL(url); resolve(ev.data); };
+    worker.onerror=function(err){ clearTimeout(timer); worker.terminate(); URL.revokeObjectURL(url); resolve({ok:false,error:err.message||'Worker error'}); };
+    try{ worker.postMessage(input); } catch(e){ clearTimeout(timer); worker.terminate(); URL.revokeObjectURL(url); resolve({ok:false,error:String(e)}); }
+  });
+}
+
+/* -------------------------
+   Download/Upload functionality
+------------------------- */
+function downloadCustomConverter() {
+  const code = document.getElementById('customCode').value;
+  if (!code.trim()) {
+    alert('No custom converter code to download.');
+    return;
+  }
+  
+  const blob = new Blob([code], { type: 'application/javascript' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'custom-converter.js';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function uploadCustomConverter(file) {
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const code = e.target.result;
+    document.getElementById('customCode').value = code;
+    alert('Custom converter uploaded successfully!');
+  };
+  reader.readAsText(file);
+}
+
+/* -------------------------
+   Main UI logic
+------------------------- */
+document.getElementById('btnToJson').addEventListener('click',()=>{
+  const type=document.getElementById('type').value; let input=document.getElementById('input').value.trim();
+  if(!input){ setOutput('❌ Input is empty'); return; }
+  try{
+    let result;
+    if(type==='json'||tryParseJSON(input)!==null){ result=JSON.parse(input); }
+    else if(type==='ruby'||(type==='auto' && input.includes('=>'))){ result=(new Function('return ('+preprocessRuby(input)+')'))(); }
+    else if(type==='js'||(type==='auto' && input.startsWith('{'))){ result=(new Function('return ('+preprocessJSObject(input)+')'))(); }
+    else if(type==='csv'||(type==='auto' && input.includes(',') && input.includes('\n'))){ result=parseCSV(input); }
+    else if(type==='qs'||(type==='auto' && input.includes('=') && input.includes('&'))){ result=parseQueryString(input); }
+    else if(type==='ini'||(type==='auto' && input.includes('[') && input.includes(']'))){ result=parseINI(input); }
+    else{ result=(new Function('return ('+preprocessRuby(input)+')'))(); }
+    setOutput(JSON.stringify(result,null,2));
+  }catch(err){ setOutput('❌ Invalid input: '+(err.message||String(err))); }
+});
+
+document.getElementById('btnFromJson').addEventListener('click',()=>{
+  const inText=document.getElementById('input').value.trim();
+  if(!inText){ setOutput('❌ Input empty'); return; }
+  try{ setOutput(JSON.stringify(JSON.parse(inText),null,2)); } catch(e){ setOutput('❌ Invalid JSON: '+e.message); }
+});
+
+document.getElementById('btnClear').addEventListener('click',()=>{ document.getElementById('input').value=''; document.getElementById('output').value=''; });
+document.getElementById('btnCopy').addEventListener('click',()=>{ const out=document.getElementById('output'); out.select(); out.setSelectionRange(0,99999); document.execCommand('copy'); alert('Copied!'); });
+document.querySelectorAll('[data-insert]').forEach(btn=>{ btn.addEventListener('click',()=>{ document.getElementById('input').value=btn.getAttribute('data-insert'); }); });
+
+/* -------------------------
+   Custom converter localStorage
+------------------------- */
+function saveCustomToStorage(code){ localStorage.setItem('tojson_custom',code); alert('Saved custom converter to localStorage.'); }
+function loadCustomFromStorage(){ return localStorage.getItem('tojson_custom')||''; }
+function clearCustomStorage(){ localStorage.removeItem('tojson_custom'); alert('Cleared custom converter from localStorage.'); }
+
+document.getElementById('saveCustom').addEventListener('click',()=>{ const code=document.getElementById('customCode').value; const check=codeIsSafe(code); if(!check.ok){ alert('Refused save: unsafe token '+check.reason); return; } saveCustomToStorage(code); });
+document.getElementById('loadCustom').addEventListener('click',()=>{ const code=loadCustomFromStorage(); if(code) document.getElementById('customCode').value=code; });
+document.getElementById('clearCustom').addEventListener('click',()=>{ clearCustomStorage(); document.getElementById('customCode').value=''; });
+
+document.getElementById('runCustom').addEventListener('click',async()=>{
+  const code=document.getElementById('customCode').value.trim();
+  if(!code){ alert('Please provide converter code.'); return; }
+  const safe=codeIsSafe(code);
+  if(!safe.ok){ setOutput('❌ Refused to run: unsafe token '+safe.reason); return; }
+  setOutput('Running custom converter (sandboxed)...');
+  const res=await runUserConverter(code,document.getElementById('input').value,1500);
+  if(!res.ok){ setOutput('❌ Custom converter error: '+(res.error||'unknown')); return; }
+  try{ setOutput(JSON.stringify(res.result,null,2)); } catch(e){ setOutput('❌ Could not stringify result: '+e.message); }
+});
+
+/* -------------------------
+   Download/Upload event listeners
+------------------------- */
+document.getElementById('downloadCustom').addEventListener('click', downloadCustomConverter);
+document.getElementById('uploadCustom').addEventListener('change', function(e) {
+  if (e.target.files.length > 0) {
+    uploadCustomConverter(e.target.files[0]);
+    // Clear the input so the same file can be uploaded again if needed
+    e.target.value = '';
+  }
+});
+
+/* Load custom converter on start */
+(function(){ const saved=loadCustomFromStorage(); if(saved) document.getElementById('customCode').value=saved; })();
+</script>
+</body>
+</html>
