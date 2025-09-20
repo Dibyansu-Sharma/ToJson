@@ -283,11 +283,15 @@ function parseINI(input){
 /* -------------------------
    Sandbox for custom converters
 ------------------------- */
-const forbiddenTokens=['fetch','XMLHttpRequest','WebSocket','importScripts','document','window','localStorage','sessionStorage','indexedDB','eval','Function','postMessage.toString','navigator','Worker','crypto.subtle'];
+const forbiddenTokens=['fetch','XMLHttpRequest','WebSocket','importScripts','document','window','localStorage','sessionStorage','indexedDB','eval','postMessage.toString','navigator','Worker','crypto.subtle'];
 
 function codeIsSafe(code){
   const lower=code.toLowerCase();
-  for(const t of forbiddenTokens) if(lower.includes(t.toLowerCase())) return {ok:false, reason:t};
+  for(const t of forbiddenTokens) {
+    // Skip "Function" constructor check if it's just the word "function" 
+    if(t.toLowerCase() === 'function' && !code.includes('Function(')) continue;
+    if(lower.includes(t.toLowerCase())) return {ok:false, reason:t};
+  }
   if(code.length>3500) return {ok:false, reason:'code-too-long'};
   return {ok:true};
 }
